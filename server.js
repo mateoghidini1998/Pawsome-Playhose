@@ -1,7 +1,16 @@
 const express = require('express');
-const connectDB = require('./config/db');
+const sequelize = require('./config/db');
 
 const app = express();
+
+sequelize.authenticate()
+ .then(() => {
+   console.log('Conexión a la base de datos establecida exitosamente.');
+ })
+ .catch(err => {
+   console.error('No se pudo conectar a la base de datos:', err);
+ });
+
 
 app.get('/', (req, res) => res.send('API Running'));
 
