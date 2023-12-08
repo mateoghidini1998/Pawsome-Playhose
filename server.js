@@ -1,5 +1,6 @@
 const express = require('express');
 const sequelize = require('./config/db');
+const { User } = require('./models/user.model.js');
 
 const app = express();
 
@@ -11,8 +12,19 @@ sequelize.authenticate()
    console.error('No se pudo conectar a la base de datos:', err);
  });
 
+app.use(express.json({ extended:false }));
+
+sequelize.sync()
+ .then(() => console.log('Users table synced'))
+ .catch(error => console.error('Error while syncronizing Users table:', error));
+
 
 app.get('/', (req, res) => res.send('API Running'));
+
+//Define routes
+app.use('/api/users', require('./routes/api/users'));
+
+
 
 const PORT = process.env.PORT || 5000;
 
