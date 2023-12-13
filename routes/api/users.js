@@ -64,7 +64,7 @@ router.post('/', [
             )
 
 
-        return res.status(201).json({ user });
+        
  
     } catch (error) {
         console.error('Error:', error);
