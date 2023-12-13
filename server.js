@@ -23,6 +23,8 @@ app.get('/', (req, res) => res.send('API Running'));
 
 //Define routes
 app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
+
 
 
 
