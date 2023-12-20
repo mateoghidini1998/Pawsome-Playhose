@@ -70,3 +70,23 @@ async (req, res)=> {
 
 
 module.exports = router;
+
+//@route   GET api/auth/me
+//@desc    Get current logged in user
+//@access  Private
+
+router.get('/me', auth, async (req, res)=>{
+    try {
+       const user = await User.findByPk(req.user.id);
+       
+       if(!user){
+        return res.status(400).json({ msg: 'User not found' });
+       }
+
+       res.json(user)
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+})
