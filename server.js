@@ -3,7 +3,8 @@ const cors = require('cors');
 const sequelize = require('./config/db');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
-const { User } = require('./models/user.model.js');
+const { User } = require('./models/User.model.js');
+const { UserType } = require('./models/UserType.model.js');
 
 const app = express();
 
