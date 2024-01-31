@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server",
-    "server": "nodemon server"
+    "server": "nodemon server",
+    "seed": "node seeder.js"
   },
   "author": "Mateo Ghidini",
   "license": "MIT",
@@ -24,6 +25,7 @@
     "sequelize": "^6.35.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.0",
     "nodemon": "^3.0.2"
   }
 }
