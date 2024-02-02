@@ -3,8 +3,6 @@ const cors = require('cors');
 const sequelize = require('./config/db');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
-const { User } = require('./models/User.model');
-const { UserType } = require('./models/UserType.model');
 
 //Route files
 const auth = require('./routes/api/auth');
@@ -32,22 +30,16 @@ app.use(cookieParser());
 //Define routes
 app.use('/api/users', users);
 app.use('/api/auth', auth);
+app.use('/api/profiles', profiles);
 
 sequelize.sync()
- .then(() => console.log('Users table synced'))
- .catch(error => console.error('Error while syncronizing Users table:', error));
-
+ .then(() => console.log('Tables Synced'))
+ .catch(error => console.error('Error while syncronizing table:', error));
 
 app.get('/', (req, res) => res.send('API Running'));
 
-
-
-
-
 //Load env vars
 dotenv.config({path: './config/config.env'});
-
-
 
 const PORT = process.env.PORT || 5000;
 
