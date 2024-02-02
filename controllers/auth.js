@@ -18,7 +18,7 @@ exports.register = asyncHandler(async (req, res, next) => {
     user = await User.create({ name, lastname, email, password });
 
     //Return jsonwebtoken -> this for users to be logged in right after registration
-    console.log(user);
+    /* console.log(user); */
     sendTokenResponse(user, 200, res);
 });
 
@@ -57,10 +57,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 //@route  GET api/auth/me
 //@access Private
 
-exports.getMe = asyncHandler(async (req, res, next) => {
-    console.log(req);
+exports.getMe = asyncHandler(async (req, res, next) => {   
     const user = await User.findByPk(req.user.id);
-    console.log('User: ', user);
     res.status(200).json({
         success: true,
         data: user
