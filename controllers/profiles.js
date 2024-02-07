@@ -1,5 +1,6 @@
 const asyncHandler = require('../middleware/async');
 const Profile = require('../models/Profile.model');
+const ErrorResponse = require('../utils/errorResponse');
 
 //@desc     Create a Profile
 //@route    POST /api/profile
@@ -31,6 +32,44 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     }
 
     profile = await Profile.create(profileFields);
-    res.json(profile);
+    res.status(200).json(profile);
 
 });    
+
+//@desc      Get all Profiles
+//@route     GET /api/profile
+//@access    Public
+
+exports.getProfiles = asyncHandler(async (req, res, next) => {
+    const profiles = await Profile.findAll();
+    res.status(200).json(profiles);
+});
+
+//@desc      Get a Profile
+//@route     GET /api/profile/:id
+//@access    Public
+
+exports.getProfile = asyncHandler(async (req, res, next) => {
+    const profile = await Profile.findOne({ where: { user_id: req.params.user_id } })
+    if (profile) {
+        res.status(200).json(profile);
+    } else {
+        return next(new ErrorResponse(`Profile not found with user_id ${req.params.user_id}`, 404));
+    }
+});
+
+//@desc      Get current logged in profile
+//@route     GET /api/profile/me
+//@access    Private
+
+
+exports.getProfileMe = asyncHandler(async (req, res, next) => {
+    const profile = await Profile.findOne({ where: { user_id: req.user.id } });
+    if (profile) {
+        res.status(200).json(profile);
+    } else {
+        return next(new ErrorResponse(`Profile not found with user_id ${req.user.id}`, 404));
+    }
+});
+
+
