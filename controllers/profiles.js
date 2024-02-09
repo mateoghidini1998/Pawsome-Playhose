@@ -62,7 +62,6 @@ exports.getProfile = asyncHandler(async (req, res, next) => {
 //@route     GET /api/profile/me
 //@access    Private
 
-
 exports.getProfileMe = asyncHandler(async (req, res, next) => {
     const profile = await Profile.findOne({ where: { user_id: req.user.id } });
     if (profile) {
@@ -73,3 +72,16 @@ exports.getProfileMe = asyncHandler(async (req, res, next) => {
 });
 
 
+//@desc      Delete a Profile
+//@route     DELETE /api/profile/:id
+//@access    Private
+
+exports.deleteProfile = asyncHandler(async (req, res, next) => {
+    const profile = await Profile.findOne({ where: { user_id: req.user.id } });
+    if (profile) {
+        await profile.destroy();
+        res.status(200).json({ success: true });
+    } else {
+        return next(new ErrorResponse(`Profile not found with user_id ${req.user.id}`, 404));
+    }
+});
