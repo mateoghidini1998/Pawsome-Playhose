@@ -1,6 +1,13 @@
 const asyncHandler = require('../middleware/async');
 const Profile = require('../models/Profile.model');
 const ErrorResponse = require('../utils/errorResponse');
+const redis = require('ioredis')
+
+//Create redis client
+const redisCache = redis.createClient({
+    host: 'localhost',
+    port:  6379
+});
 
 //@desc     Create a Profile
 //@route    POST /api/profile
@@ -24,14 +31,11 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     let profile = await Profile.findOne({ where: { user_id: req.user.id } });
 
     if (profile) {
-        profile = await profile.update(
-            { user: req.user.id },
-            { $set: profileFields },
-            { new: true } 
-        );
-    }
-
+        return next(new ErrorResponse(`Profile already exists with user_id ${req.user.id}`, 400));
+        
+    } 
     profile = await Profile.create(profileFields);
+    await redisCache.del('profiles');    
     res.status(200).json(profile);
 
 });    
@@ -41,9 +45,28 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 //@access    Public
 
 exports.getProfiles = asyncHandler(async (req, res, next) => {
-    const profiles = await Profile.findAll();
-    res.status(200).json(profiles);
+
+    //Create key for redis
+    const cacheKey = 'profiles';
+
+    //Check if data is coming from cache or from db
+    redisCache.get(cacheKey, (err, data) => {
+        if (err) throw err;
+
+        if (data !== null) {
+            console.log('Profiles cached');
+            return res.status(200).json(JSON.parse(data));
+        } else {
+            console.log('Profiles not cached');
+            Profile.findAll().then((profiles) => {
+                // Stores profiles in redis cache for 1h.
+                redisCache.setex(cacheKey,  3600, JSON.stringify(profiles));
+                res.status(200).json(profiles);
+            }).catch(next);
+        }
+    });
 });
+
 
 //@desc      Get a Profile
 //@route     GET /api/profile/:id
